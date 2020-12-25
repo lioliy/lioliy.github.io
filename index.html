@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="./css/style.css" />
+	<link rel="icon" type="image/png" href="./images/newton_icon_16x16.png" />
+	<link rel="icon" type="image/png" href="./images/newton_icon_32x32.png" />
+	<title>Newton 3.2 - User Guide</title>
+</head>
+
+<body>
+	<div id="leftmenu">
+		<h1>Newton 3.3 User Guide</h1>
+		<h2>Table of contents</h2>
+		<ul>
+			<li><a href="#Introduction">Introduction</a></li>
+			<li><a href="#Bodies">Bodies</a>
+				<ul>
+					<li><a href="#BodiesGeneral">General Properties</a></li>
+					<li><a href="#BodiesAdvanced">Advanced Properties</a></li>
+				</ul>
+			</li>
+			<li><a href="#Joints">Joints</a>
+				<ul>
+					<li><a href="#DistanceJoint">Distance Joint</a></li>
+					<li><a href="#PivotJoint">Pivot Joint</a></li>
+					<li><a href="#PistonJoint">Piston Joint</a></li>
+					<li><a href="#SpringJoint">Spring Joint</a></li>
+					<li><a href="#WheelJoint">Wheel Joint</a></li>
+					<li><a href="#BlobJoint">Blob Joint</a></li>
+				</ul>
+			</li>
+			<li><a href="#UserInterface">User Interface</a>
+				<ul>
+					<li><a href="#SimulationPreview">Preview</a></li>
+					<li><a href="#ToolButtons">Tool Buttons</a></li>
+					<li><a href="#SimulationCommands">Simulation Commands</a></li>
+					<li><a href="#WallButtons">Wall Buttons</a></li>
+					<li><a href="#SceneSnapshots">Scene Snapshots</a></li>
+					<li><a href="#ContextMenu">Context Menu</a></li>
+					<li><a href="#PropertyAnatomy">Property Anatomy</a></li>
+				</ul>
+			</li>
+			<li><a href="#Gravity">Gravity</a></li>
+			<li><a href="#Solver">Solver</a></li>
+			<li><a href="#KeyframeAnimation">Keyframe Animation</a></li>
+			<li><a href="#Preferences">Preferences</a></li>
+			<li><a href="#ActionsHistory">Actions History</a></li>
+			<li><a href="#LoadSaveSettings">Loading and Saving Settings</a></li>
+			<li><a href="#SeparatingShapes">Separating Shapes</a></li>
+			<li><a href="#ApplyResult">Applying Result</a></li>
+			<li><a href="#KeyboardShortcuts">Keyboard Shortcuts</a></li>
+			<li><a href="#Troubleshooting">Troubleshooting</a></li>
+		</ul>
+	</div>
+
+	<div id="content">
+
+		<!--========== Introduction ==========-->
+		<a id="Introduction"></a>
+		<h2>Introduction</h2>
+		<p>Newton is a 2D physics simulator for Adobe After Effects (AE).</p>
+		<p>Newton interprets 2D layers of the current composition as rigid bodies in a physical world.
+		These bodies can collide with each other, slide, bounce, and react to gravity. Bodies can also be connected to each other using joints.</p>
+		<p>Newton supports various types of bodies: some types allow bodies to be animated in AE while reacting	to physical forces,
+		others are entirely controlled by the solver.</p>
+		<p>Newton provides a simple, clean, and easy to use interface, offering fast OpenGL preview and intuitive controls. Once simulation is completed,
+		Newton exports the animation to AE using standard keyframes.</p>
+		<figure>
+			<img class="illust" src="./images/ui.png" alt="Newton Interface">
+			<figcaption>Newton Interface</figcaption>
+		</figure>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>Newton is a not an effect, and you won't find it in the Effects & Presets panel. You open it using the Newton command from the Composition menu.</li>
+			</ul>
+		</div>
+
+
+		<!--========== Bodies ==========-->
+		<a id="Bodies"></a>
+		<h2>Bodies</h2>
+		<p>Newton transforms the 2D layers of the composition into physical objects called bodies. These bodies can bounce, slide, and collide with each other.</p>
+		<p>Newton ignores the following layer types: audio layers, guide layers, null layers, 3D layers, and video-disabled layers.</p>
+		<p>When creating a scene in AE it is important to keep in mind that Newton doesn't look at layer pixels, it only interprets the shape/contour of a layer.
+		For instance, precomp or footage layers will be interpreted as rectangles, no matter what they actually contain or represent.
+		Every custom body shape must be created with masks, shapes or text.</p>
+		<p>To change the properties of a body, you must first select it	in the body list or directly in the preview. Body settings can be copied from one
+		body and reapplied to other bodies using the Copy/Paste Body Settings commands in the Edit menu.</p>
+		<div class="note">
+			<p><span class="note-title">Notes:</span></p>
+			<ul>
+				<li>When a layer has multiple masks or when a shape layer contains multiple shape groups, you will be prompted
+				to choose whether you want to separate these shapes in individual bodies (see <a href="#SeparatingShapes">Separating Shapes</a>).</li>
+				<li>Complex shapes may be represented by a mesh with hundreds of polygons, and performances may suffer.
+				Keep custom shapes as simple as possible (using a proxy shape for instance), or use the convex hull option
+				(see <a href="#UseConvexHull">Use Convex Hull</a>) to reduce unnecessary precision.</li>
+				<li>Illustrator footage layers can be converted to shape layers using the Create Shapes from Vector Layer command.</li>
+			</ul>
+		</div>
+
+		<!-- General -->
+		<a id="BodiesGeneral"></a>
+		<h3>General Properties</h3>
+		<p>The general body properties concern internal body settings such as the body type, the friction coefficient, or the restitution (bounciness) factor.</p>
+		<figure>
+			<img class="illust" src="./images/body_properties_general.png" alt="Body Properties Panel - General">
+			<figcaption>Body Properties Panel - General</figcaption>
+		</figure>
+
+		<p class="prop-title">Type</p>
+		<p class="prop-text">Newton supports the following types of body:</p>
+		<ul>
+			<li><b>static</b>: a non-moving body</li>
+			<li><b>kinematic</b>: a body animated in AE with keyframes or expression;
+			its motion path is not altered by the physics until the end of the animation
+			(i.e., the last keyframe time or the end of comp when animated by expression),
+			where the body becomes dynamic</li>
+			<li><b>dynamic</b>: a body fully controlled by the solver (default type)</li>
+			<li><b>dormant</b>: a body not influenced by gravity until another body collides with it, and makes it dynamic</li>
+			<li><b>AEmatic</b>: a body animated in AE with keyframes or expression, but also influenced by the physics
+			(hybrid type between kinematic and dynamic types)</li>
+			<li><b>dead</b>: a body ignored by the solver (in terms of collision response)</li>
+		</ul>
+		<figure>
+			<img class="illust" src="./movies/body_type.gif" alt="Body Types (AE/Newton)">
+			<figcaption>Body Types (AE/Newton)</figcaption>
+		</figure>
+
+		<p class="prop-title">Density</p>
+		<p class="prop-text">This parameter defines the mass of a non-static body. High-density body doesn't fall down faster
+		than low-density body (they fall at the same speed), however when collision occurs the difference of density
+		is easily noticeable.</p>
+		<figure>
+			<img class="illust" src="./movies/density.gif" alt="Density: 2 and 0.5">
+			<figcaption>Density: 2 and 0.5</figcaption>
+		</figure>
+
+		<p class="prop-title">Friction</p>
+		<p class="prop-text">This parameter influences the way bodies slide along each other. A value of 0 turns the friction off, and a value of 1 makes the friction strong.</p>
+		<figure>
+			<img class="illust" src="./movies/friction.gif" alt="Varying Friction">
+			<figcaption>Varying Friction</figcaption>
+		</figure>
+
+		<p class="prop-title">Bounciness</p>
+		<p class="prop-text">This parameter is used to make bodies bounce. A value of 0 means no bounciness (e.g., a ball falling on the ground will not bounce), a value of
+		1 means high bounciness (e.g., a ball falling on the ground will bounce indefinitely).</p>
+		<figure>
+			<img class="illust" src="./movies/bounciness.gif" alt="Varying Bounciness">
+			<figcaption>Varying Bounciness</figcaption>
+		</figure>
+
+		<p class="prop-title">Color</p>
+		<p class="prop-text">This parameter sets the body color used in the simulation preview.</p>
+		<p></p>
+
+		<p class="prop-title">Mesh Precision</p>
+		<p class="prop-text">This parameter is used by Newton's internal shape triangulator when a body is defined by a shape with round corners. Default value is 2.
+		Higher value increases precision but performance may suffer. For complex shapes, it is highly
+		recommended to keep this value as low as possible.</p>
+		<figure>
+			<img class="illust" src="./movies/mesh_precision.gif" alt="Mesh Precision">
+			<figcaption>Mesh Precision</figcaption>
+		</figure>
+
+		<p class="prop-title">Velocity Magnitude/Direction</p>
+		<p class="prop-text">These parameters can be used to set the linear velocity of a body.
+		You can also set the velocity vector directly in the preview using the Velocity tool (P).</p>
+		<figure>
+			<img class="illust" src="./movies/linear_velocity.gif" alt="Linear Velocity">
+			<figcaption>Linear Velocity</figcaption>
+		</figure>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>When you move the velocity handle, you can see the body's trajectory.</li>
+			</ul>
+		</div>
+
+		<p class="prop-title">Angular Velocity</p>
+		<p class="prop-text">This parameter is used to set the angular velocity of a body.</p>
+		<figure>
+			<img class="illust" src="./movies/linear_angular_velocity.gif" alt="Linear and Angular Velocity">
+			<figcaption>Linear and Angular Velocity</figcaption>
+		</figure>
+
+		<p class="prop-title">Linear Damping</p>
+		<p class="prop-text">This parameter is used to reduce the linear velocity of a body.</p>
+		<figure>
+			<img class="illust" src="./movies/linear_damping.gif" alt="Linear Damping: 0 and 2">
+			<figcaption>Linear Damping: 0 and 2</figcaption>
+		</figure>
+
+		<p class="prop-title">Angular Damping</p>
+		<p class="prop-text">This parameter is used to reduce the angular velocity of a body.</p>
+		<figure>
+			<img class="illust" src="./movies/angular_damping.gif" alt="Angular Damping: 0 and 2">
+			<figcaption>Angular Damping: 0 and 2</figcaption>
+		</figure>
+
+		<p class="prop-title">AEmatic Damping</p>
+		<p class="prop-text">This parameter is used only by AEmatic bodies. It corresponds to the damping coefficient of the joint
+		connecting the motion path set in AE (desired path) and the motion path determined by the solver.</p>
+		<p></p>
+
+		<p class="prop-title">AEmatic Tension</p>
+		<p class="prop-text">This parameter is used only by AEmatic bodies. It corresponds to the tension of the joint
+		connecting the AE motion path and the motion path determined by the solver.</p>
+		<figure>
+			<img class="illust" src="./movies/aematic_tension.gif" alt="AEmatic Tension">
+			<figcaption>AEmatic Tension</figcaption>
+		</figure>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>You can move the anchor of the AEmatic connection using the Anchor tool (Y).</li>
+			</ul>
+		</div>
+
+		<!-- Advanced -->
+		<a id="BodiesAdvanced"></a>
+		<h3>Advanced Properties</h3>
+		<p>The advanced body properties concern optional settings that allow you to control additional aspects of a body, such as collision filtering or magnetism.</p>
+		<figure>
+			<img class="illust" src="./images/body_properties_advanced.png" alt="Body Properties Panel - Advanced">
+			<figcaption>Body Properties Panel - Advanced</figcaption>
+		</figure>
+
+		<p class="prop-title">Collision Group, Collide With</p>
+		<p class="prop-text">You can assign a collision group to a body (five groups are available), and specify which groups the body should collide with.
+		By default every body belongs to the same group and can collide with every other groups.</p>
+		<figure>
+			<img class="illust" src="./movies/collision_group.gif" alt="Collision Filtering">
+			<figcaption>Collision Filtering</figcaption>
+		</figure>
+
+		<p class="prop-title">Fixed Rotation</p>
+		<p class="prop-text">This parameter is used to prevent body rotation.</p>
+		<p></p>
+
+		<p class="prop-title">Gravity Scale</p>
+		<p class="prop-text">This parameter allows you to set a custom gravity per body. A value of 0 turns gravity off for the body.</p>
+		<figure>
+			<img class="illust" src="./movies/gravity_scale.gif" alt="Varying Gravity Scale">
+			<figcaption>Varying Gravity Scale</figcaption>
+		</figure>
+        <p>Note that negative values are allowed.</p>
+		<figure>
+			<img class="illust" src="./movies/gravity_scale2.gif" alt="Opposite Gravities">
+			<figcaption>Opposite Gravities</figcaption>
+		</figure>
+
+		<a id="UseConvexHull"></a>
+		<p class="prop-title">Use Convex Hull</p>
+		<p class="prop-text">This parameter allows you to approximate the geometry of a complex body using the convex hull of the shape vertices.
+		In some situations, when working with text for instance, this option can highly increase performances while producing realistic simulation.</p>
+		<figure>
+			<img class="illust" src="./movies/convex_hull.gif" alt="Convex Hull">
+			<figcaption>Convex Hull</figcaption>
+		</figure>
+
+		<p class="prop-title">Magnetism Type</p>
+		<p class="prop-text">This parameter allows you to transform a body into a magnet that can either attract or repulse other bodies.</p>
+		<figure>
+			<img class="illust" src="./movies/attractor.gif" alt="Attraction">
+			<figcaption>Attraction</figcaption>
+		</figure>
+		<p></p>
+		<figure>
+			<img class="illust" src="./movies/repulsor.gif" alt="Repulsion">
+			<figcaption>Repulsion</figcaption>
+		</figure>
+
+		<p class="prop-title">Magnet Intensity</p>
+		<p class="prop-text">This parameter specifies the intensity of magnetism.</p>
+		<p></p>
+
+		<p class="prop-title">Magnet Distance</p>
+		<p class="prop-text">This parameter determines the maximum distance at which the magnet is active.</p>
+		<p></p>
+
+		<p class="prop-title">Accept Magnetism</p>
+		<p class="prop-text">This parameter specifies whether the body is sensitive to magnetism of other bodies.</p>
+		<p></p>
+
+		<p class="prop-title">Export Contacts</p>
+		<p class="prop-text">This parameter allows you to export every contact for a body as a keyframe in AE. A slider effect called Contacts is added to the layer to hold contact keyframes.</p>
+		<figure>
+			<img class="illust" src="./images/contact_keyframes.png" alt="Contact Keyframes">
+			<figcaption>Contact Keyframes</figcaption>
+		</figure>
+		<p>This can be used to synchronize events, for instance starting a precomp at each contact keyframe.</p>
+		<figure>
+			<img class="illust" src="./movies/export_contacts.gif" alt="Export Contacts">
+			<figcaption>Export Contacts</figcaption>
+		</figure>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>See the Export Contacts sample projects for examples of how to use contact keyframes with expressions.</li>
+			</ul>
+		</div>
+
+
+		<!--========== Joints ==========-->
+		<a id="Joints"></a>
+		<h2>Joints</h2>
+		<p>Newton allows you to create joints between bodies. A joint is used to add a constraint between two bodies.</p>
+		<p>To add a new joint, select two bodies and use one of the Add Joint buttons above the joint list.
+		To remove a joint, select it in the joint list (or press W when one of the connected bodies is selected),
+		and click on the Remove Joint button (or press Alt W). To modify joint properties, you must first select
+		the joint, and then change its properties.</p>
+		<figure>
+			<img class="illust" src="./images/joint_buttons.png" alt="Joint Buttons">
+			<figcaption>Joint Buttons</figcaption>
+		</figure>
+		<p>Each type of joint has an Active parameter that allows you to activate or deactivate the joint. This parameter can be animated to create dynamic joint.</p>
+		<p>Joint settings can be copied from one joint and reapplied to other joints of the same type using the Copy/Paste Joint Settings commands in the Edit menu.</p>
+		<div class="note">
+			<p><span class="note-title">Notes:</span></p>
+			<ul>
+				<li>Use the Anchor tool (Y) to reposition joints anchor.</li>
+				<li>When multiple bodies are selected, multiple joints are created at once (see keyboard shortcuts section for details).
+					The order of selection is important when creating multiple joints. Use the Shift key while clicking on the bodies to create an ordered selection (e.g. for creating a chain of bodies).</li>
+				<li>You can customize the appearance of joints (colors and stroke width) in the Preferences dialog.</li>
+			</ul>
+		</div>
+
+		<!-- Distance -->
+		<a id="DistanceJoint"></a>
+		<h3>Distance Joint</h3>
+		<p>A distance joint implies that the distance between two points (joint anchors) on two bodies must be constant. This is not always true since you can give elasticity
+		to the joint, and obtain a soft distance joint.</p>
+		<figure>
+			<img class="illust" src="./movies/distance.gif" alt="Default Distance Joint">
+			<figcaption>Default Distance Joint</figcaption>
+		</figure>
+        <p></p>
+		<figure>
+			<img class="illust" src="./movies/distance_anchor.gif" alt="Custom Anchors">
+			<figcaption>Custom Anchors</figcaption>
+		</figure>
+        <p></p>
+		<figure>
+			<img class="illust" src="./movies/distance_soft.gif" alt="Soft Distance Joint">
+			<figcaption>Soft Distance Joint</figcaption>
+		</figure>
+
+		<p class="prop-title">Tension</p>
+		<p class="prop-text">This parameter allows you to give elasticity to the joint. This can be used for instance to create a soft body (by connecting several small bodies with soft distance joints).</p>
+		<figure>
+			<img class="illust" src="./movies/soft_body.gif" alt="Soft Body">
+			<figcaption>Soft Body</figcaption>
+		</figure>
+
+		<p class="prop-title">Damping</p>
+		<p class="prop-text">This parameter is used to reduce or soften the amount of motion.</p>
+		<p></p>
+
+		<p class="prop-title">Collide Connected</p>
+		<p class="prop-text">This parameter specifies whether the two connected bodies should collide with each other.</p>
+
+		<!-- Pivot -->
+		<a id="PivotJoint"></a>
+		<h3>Pivot Joint</h3>
+		<p>A pivot joint forces two bodies to share a common anchor point or pivot point.
+		The joint angle is the relative rotation between the two bodies and can be restricted to a specific range.
+		The pivot point must be set directly in the preview using the Joint Anchor tool (Y).</p>
+		<figure>
+			<img class="illust" src="./movies/revolute.gif" alt="Pivot Joints">
+			<figcaption>Pivot Joints</figcaption>
+		</figure>
+
+		<p class="prop-title">Enable Limit</p>
+		<p class="prop-text">This parameter is used to force the joint angle to remain between a lower and upper bound.</p>
+		<p></p>
+
+		<p class="prop-title">Lower Angle</p>
+		<p class="prop-text">This parameter specifies the lower bound of the joint angle.</p>
+		<p></p>
+
+		<p class="prop-title">Upper Angle</p>
+		<p class="prop-text">This parameter specifies the upper bound of the joint angle.</p>
+		<p></p>
+
+		<p class="prop-title">Enable Motor</p>
+		<p class="prop-text">This parameters determines whether the joint motor is enabled.</p>
+		<figure>
+			<img class="illust" src="./movies/revolute_motor.gif" alt="Pivot Joints with Motor">
+			<figcaption>Pivot Joints with Motor</figcaption>
+		</figure>
+
+		<p class="prop-title">Motor Speed</p>
+		<p class="prop-text">This parameters allows you to specify the joint speed.</p>
+		<p></p>
+
+		<p class="prop-title">Max Motor Torque</p>
+		<p class="prop-text">This parameters allows you to specify the maximum motor torque allowed.</p>
+		<p></p>
+
+		<p class="prop-title">Collide Connected</p>
+		<p class="prop-text">This parameter specifies whether the two connected bodies should collide with each other.</p>
+
+		<!-- Piston -->
+		<a id="PistonJoint"></a>
+		<h3>Piston Joint</h3>
+		<p>A piston joint allows for relative translation of two bodies along a specified axis. Their relative rotation is fixed.
+		Its parameters are similar to the pivot joint parameters, except that rotation is replaced with translation.
+		The translation axis must be set directly in the preview using the Joint Anchor tool (Y).
+		When the motor is enabled the joined bodies try to move at a given speed, with a given force.</p>
+		<figure>
+			<img class="illust" src="./movies/prismatic.gif" alt="Piston Joint">
+			<figcaption>Piston Joint</figcaption>
+		</figure>
+
+        <p class="prop-title">Enable Limit</p>
+		<p class="prop-text">This parameter is used to force the joint translation to remain between a lower and upper bound.</p>
+		<p></p>
+
+		<p class="prop-title">Lower Translation</p>
+		<p class="prop-text">This parameter specifies the lower bound of the joint translation.</p>
+		<p></p>
+
+		<p class="prop-title">Upper Translation</p>
+		<p class="prop-text">This parameter specifies the upper bound of the joint translation.</p>
+		<p></p>
+
+		<p class="prop-title">Enable Motor</p>
+		<p class="prop-text">This parameters determines whether the joint motor is enabled.</p>
+		<p></p>
+
+		<p class="prop-title">Motor Speed</p>
+		<p class="prop-text">This parameters allows you to specify the joint motor speed.</p>
+		<p></p>
+
+		<p class="prop-title">Max Motor Force</p>
+		<p class="prop-text">This parameters allows you to specify the maximum motor force allowed.</p>
+		<p></p>
+
+		<p class="prop-title">Collide Connected</p>
+		<p class="prop-text">This parameter specifies whether the two connected bodies should collide with each other.</p>
+
+
+		<!-- Spring -->
+		<a id="SpringJoint"></a>
+		<h3>Spring Joint</h3>
+		<p>A spring joint constrains two bodies to move like they were connected by a spring.</p>
+		<figure>
+			<img class="illust" src="./movies/spring.gif" alt="Spring Joint">
+			<figcaption>Spring Joint</figcaption>
+		</figure>
+
+		<p class="prop-title">Springiness</p>
+		<p class="prop-text">This parameter controls the strength of the spring.</p>
+		<p></p>
+
+		<p class="prop-title">Damping</p>
+		<p class="prop-text">This parameter allows you to reduce the amplitude of oscillations.</p>
+		<p></p>
+
+		<p class="prop-title">Desired Length</p>
+		<p class="prop-text">This parameter specifies the length of the spring when it is inactive.</p>
+
+
+		<!-- Wheel -->
+		<a id="WheelJoint"></a>
+		<h3>Wheel Joint</h3>
+		<p>A wheel joint is a mix between a piston and a pivot joint. This joint is typically used to attach a wheel to a vehicle. It provides suspension and has a motor.
+		The translation axis must be set directly in the preview using the Joint Anchor tool (Y).</p>
+		<figure>
+			<img class="illust" src="./movies/wheel.gif" alt="Wheel Joint">
+			<figcaption>Wheel Joint</figcaption>
+		</figure>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>The order in which you select the bodies is important when creating a wheel joint.
+				You need to select the vehicle first, then the wheel body. See Car and Motorbike sample
+				projects for examples of how to setup wheel joints.</li>
+			</ul>
+		</div>
+
+		<p class="prop-title">Suspension</p>
+		<p class="prop-text">This parameter controls the spring suspension.</p>
+		<figure>
+			<img class="illust" src="./movies/suspension.gif" alt="Suspension: 3 and 6">
+			<figcaption>Suspension: 3 and 6</figcaption>
+		</figure>
+
+		<p class="prop-title">Damping</p>
+		<p class="prop-text">This parameter allows you to reduce the amplitude of oscillations.</p>
+		<p></p>
+
+		<p class="prop-title">Enable Motor</p>
+		<p class="prop-text">This parameters determines whether the joint motor is enabled.</p>
+		<p></p>
+
+		<p class="prop-title">Motor Speed</p>
+		<p class="prop-text">This parameters allows you to specify the joint motor speed.</p>
+		<p></p>
+
+		<p class="prop-title">Max Motor Torque</p>
+		<p class="prop-text">This parameters allows you to specify the maximum motor torque allowed.</p>
+		<p></p>
+
+		<p class="prop-title">Collide Connected</p>
+		<p class="prop-text">This parameter specifies whether the two connected bodies should collide with each other.</p>
+
+
+		<!-- Blob -->
+		<a id="BlobJoint"></a>
+		<h3>Blob Joint</h3>
+		<p>A blob joint forces a group of bodies to maintain a constant volume within them (actually a constant area since we are in 2D).
+		Internally, the blob joint uses several soft distance joints to connect the bodies.</p>
+		<figure>
+			<img class="illust" src="./movies/blob.gif" alt="Blob Joint">
+			<figcaption>Two Blob Joints</figcaption>
+		</figure>
+
+		<p class="prop-title">Tension</p>
+		<p class="prop-text">This parameter allows you to control the softness of the joint.</p>
+		<p></p>
+
+		<p class="prop-title">Damping</p>
+		<p class="prop-text">This parameter is used to reduce the amount of motion.</p>
+		<p></p>
+
+		<p class="prop-title">Collide Connected</p>
+		<p class="prop-text">This parameter specifies whether the connected bodies should collide with each other.</p>
+
+
+		<!--========== User Interface ==========-->
+		<a id="UserInterface"></a>
+		<h2>User Interface</h2>
+		<p>Newton offers a clean cross-platform interface that is used to create the scene setup.</p>
+		<p></p>
+
+		<!-- Simulation Preview -->
+		<a id="SimulationPreview"></a>
+		<p class="prop-title">Preview</p>
+		<p class="prop-text">Newton provides an OpenGL view to preview the result of the simulation. The view handles mouse and keyboard events.
+		For instance, you can zoom and pan in the view, or select and move bodies in the scene. A contextual menu also provides some
+        common operations (accessible from both the preview and the body list).</p>
+		<p></p>
+
+		<p class="prop-title">Preview Options</p>
+		<p class="prop-text">The following visualization options are available in the View Options popup menu:</p>
+		<ul>
+			<li><b>Shapes</b>: displays all shapes</li>
+			<li><b>Mesh</b>: displays internal shapes representation (Newton uses the <a href="http://code.google.com/p/poly2tri/" target="_blank">poly2tri</a> library to triangulate shapes)</li>
+			<li><b>Bounding Box</b>: displays axis aligned bounding box</li>
+			<li><b>Local Axes</b>: displays local X and Y axes, in red and green respectively</li>
+			<li><b>Joints</b>: displays all joints</li>
+			<li><b>Comp Bounds</b>: displays a thin frame that indicates the bounds of the composition</li>
+		</ul>
+		<figure>
+			<img class="illust" src="./images/preview_options.png" alt="Preview Options">
+			<figcaption>Preview Options</figcaption>
+		</figure>
+
+		<!-- Tool Buttons -->
+		<a id="ToolButtons"></a>
+        <p class="prop-title">Tool Buttons</p>
+		<p class="prop-text">There are five tool buttons above the preview, each one being used for a specific operation:</p>
+		<ul>
+			<li><b>Selection</b> (V): to select bodies and move them</li>
+			<li><b>Hand</b> (H or space bar): to translate or pan the view</li>
+			<li><b>Anchor</b> (Y): to modify joint or AEmatic anchors</li>
+			<li><b>Gravity</b> (G): to set gravity directly in the preview</li>
+			<li><b>Velocity</b> (P): to set body velocity directly in the preview</li>
+		</ul>
+        <figure>
+			<img class="illust" src="./images/tool_buttons.png" alt="Tool Buttons">
+			<figcaption>Tool Buttons</figcaption>
+		</figure>
+		<div class="note">
+			<p><span class="note-title">Notes:</span></p>
+			<ul>
+				<li>You must select at least one joint (or an AEmatic body) before using the Anchor tool.</li>
+				<li>You must select at least one body before using the Velocity tool.</li>
+				<li>When the Velocity tool is selected, holding down Alt when you click on a body allows you to select it.</li>
+			</ul>
+		</div>
+
+		<p class="prop-title">Zoom</p>
+		<p class="prop-text">You can zoom in and out the preview by using either the zoom slider, the mouse wheel, or the dedicated buttons. The Best Fit Zoom button
+		allows you to automatically scale the scene to fit the view.</p>
+		<figure>
+			<img class="illust" src="./images/zoom.png" alt="Zoom">
+			<figcaption>Zoom</figcaption>
+		</figure>
+
+		<p class="prop-title">Background Color</p>
+		<p class="prop-text">By default the background color of the preview is the same as the background color of the composition. You can change it by
+		using the color picker next to the zoom slider.</p>
+		<figure>
+			<img class="illust" src="./images/background_color.png" alt="Background Color">
+			<figcaption>Background Color</figcaption>
+		</figure>
+
+		<!-- Simulation Commands -->
+		<a id="SimulationCommands"></a>
+		<p class="prop-title">Simulation Commands</p>
+		<p class="prop-text">To start the simulation, click on the Play button (shortcut key: 0). The other available commands allow you
+		to restart (shortcut key: Enter (numpad) or Home), step one frame (shortcut key: 1 or PageDown) and
+		activate the loop mode (shortcut key: 2).</p>
+		<figure>
+			<img class="illust" src="./images/simulation_commands.png" alt="Simulation Commands">
+			<figcaption>Simulation Commands</figcaption>
+		</figure>
+
+		<!-- Wall Buttons -->
+		<a id="WallButtons"></a>
+		<p class="prop-title">Wall Buttons</p>
+		<p class="prop-text">It is often desirable to make composition bounds act as static walls, or to create an infinitely long floor.
+		To this end, activate the corresponding button below the preview.</p>
+		<figure>
+			<img class="illust" src="./images/wall_buttons.png" alt="Wall Buttons">
+			<figcaption>Wall Buttons</figcaption>
+		</figure>
+
+		<!-- Scene Snapshots -->
+		<a id="SceneSnapshots"></a>
+		<p class="prop-title">Scene Snapshots</p>
+		<p class="prop-text">The Take Scene Snapshot button above the preview allows you to save temporarily the current scene settings.
+		To restore a Scene Snapshot, double-click on it. You can delete it by using either
+		the context menu of the snapshots list (right click > Delete), or the delete/backspace key.
+		This feature is useful for creating multiple versions of the same scene without having to export separated settings file for each one.</p>
+		<figure>
+			<img class="illust" src="./images/scene_snapshots.png" alt="Scene Snapshots">
+			<figcaption>Scene Snapshots</figcaption>
+		</figure>
+
+		<!-- Context Menu -->
+		<a id="ContextMenu"></a>
+		<p class="prop-title">Context Menu</p>
+		<p class="prop-text">A context menu regrouping some common operations is available by right-clicking in the preview. This context menu is also attached to the body list.</p>
+		<figure>
+			<img class="illust" src="./images/context_menu.png" alt="Context Menu">
+			<figcaption>Context Menu</figcaption>
+		</figure>
+		<p>Randomizer command opens the Randomizer dialog. It allows you to generate random value for a given property.
+		With some bodies or joints selected, open Randomizer, then select a property in the list, and specify the amount of randomness.</p>
+		<figure>
+			<img class="illust" src="./images/randomizer.png" alt="Randomizer">
+			<figcaption>Randomizer</figcaption>
+		</figure>
+
+		<!-- Property Anatomy -->
+		<a id="PropertyAnatomy"></a>
+		<p class="prop-title">Property Anatomy</p>
+		<p class="prop-text">Property value can be set either by directly typing the desired value in the edit box, or by dragging the value horizontally
+		(similar to AE's scrubby sliders).</p>
+		<p>Next to almost every property, you will find the following buttons:</p>
+		<ul>
+			<li><b>Reset</b>: to reapply the default value</li>
+			<li><b>Randomize</b>: to open the Randomizer dialog with the property selected</li>
+			<li><b>Keyframe</b>: to open the Keyframe panel</li>
+		</ul>
+		<figure>
+			<img class="illust" src="./images/property_anatomy.png" alt="Property Anatomy">
+			<figcaption>Property Anatomy</figcaption>
+		</figure>
+
+		<!--========== Gravity ==========-->
+		<a id="Gravity"></a>
+		<h2>Gravity</h2>
+		<p>Gravity is a force acting on all bodies. You can set its magnitude and direction using either the edit fields, the gravity view or the Gravity tool (G).
+		You can animate the gravity by capturing mouse movement, or using the Inherit From checkbox that allows you to select a composition layer
+		(layer's position will be used as gravity vector).</p>
+		<figure>
+			<img class="illust" src="./images/gravity.png" alt="Gravity">
+			<figcaption>Gravity</figcaption>
+		</figure>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>The gray circular guide indicates a magnitude of 10.</li>
+			</ul>
+		</div>
+
+		<p class="prop-title">Magnitude</p>
+		<p class="prop-text">This parameter specifies the magnitude of the gravity vector.</p>
+		<p></p>
+
+		<p class="prop-title">Direction</p>
+		<p class="prop-text">This parameter specifies the direction of the gravity vector. When changing the gravity in the gravity view or with the Gravity tool,
+		hold the Shift key to snap the vector to the nearest axis (horizontal or vertical).</p>
+		<p></p>
+
+		<p class="prop-title">Inherit From</p>
+		<p class="prop-text">Use this option if you want the gravity to inherit its value from the position of a layer. For instance, position [0,10] represents
+		the default gravity which has a magnitude of 10 and a direction of 90&deg;.</p>
+		<p></p>
+
+		<p class="prop-title">Capture, Apply</p>
+		<p class="prop-text">When Capture is active, every mouse movement in the gravity view is recorded. By clicking on the Apply button, the recorded values
+		are assigned to a new null layer that is automatically selected in the popup menu.</p>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>Starting dragging the mouse in the gravity view with Capture turned on, also starts the simulation.</li>
+			</ul>
+		</div>
+
+
+		<!--========== Solver ==========-->
+		<a id="Solver"></a>
+		<h2>Solver</h2>
+		<p>Internally Newton uses part of the <a href="http://www.box2d.org" target="_blank">Box2D</a> library, a 2D physics engine
+		initially developed for game programming.</p>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>The solver is tuned for objects that are between 0.1 and 10 meters. Newton applies a scaling factor of 100
+				to convert dimensions in pixels to dimensions in meters. For instance, a 100x100px solid in AE is
+				interpreted as a 1x1m box in Newton.</li>
+			</ul>
+		</div>
+
+		<p class="prop-title">Time Divider</p>
+		<p class="prop-text">This parameter affects the time step used for solving physics equations. It can be viewed as a time remap controller.
+		For instance, a value of 5 produces a slower animation similar to high precision slow motion. Default value is 1.</p>
+		<figure>
+			<img class="illust" src="./movies/time_divider.gif" alt="Time Divider: 1, 0.5 and 2">
+			<figcaption>Time Divider: 1, 0.5 and 2</figcaption>
+		</figure>
+
+		<p class="prop-title">Collision Tolerance</p>
+		<p class="prop-text">This parameter specifies the constraint and collision tolerance of the solver. Default value is 25. Small values often reduce gaps
+		between touching bodies, but may introduce overlap or instability when collision occur.</p>
+		<figure>
+			<img class="illust" src="./movies/collision_tolerance.gif" alt="Tolerance: 1, 50 and 100">
+			<figcaption>Tolerance: 1, 50 and 100</figcaption>
+		</figure>
+
+		<p class="prop-title">Substeps</p>
+		<p class="prop-text">This parameter allows you to subdivide the time step. Default value is 2. Higher value may produce a simulation of higher quality at the expense
+		of extra computation time.</p>
+
+
+		<!--========== Keyframe Animation ==========-->
+		<a id="KeyframeAnimation"></a>
+		<h2>Keyframe Animation</h2>
+		<p>Most of body and joint properties can be animated over time using keyframes. To create a keyframe you first open the Keyframes
+		panel by clicking on the keyframe icon next to the property. Then, you can add keyframes using the Add button.
+		The two other buttons are for removing either the selected keyframe	or all keyframes at once.</p>
+		<figure>
+			<img class="illust" src="./images/keyframe_buttons.png" alt="Keyframe Buttons">
+			<figcaption>Keyframe Buttons</figcaption>
+		</figure>
+		<p>When creating a keyframe, the default keyframe time corresponds to the current frame if there is no existing keyframe at that time.
+		Otherwise, the keyframe is created at the first next frame for which there is no existing keyframe (typically at <i>f</i>+1, where <i>f</i> is the current frame number).</p>
+		<p>For each created keyframe, you need to specify its time, value and interpolation. A resizable view shows the current graph of the property value.</p>
+		<figure>
+			<img class="illust" src="./images/keyframes.png" alt="Keyframes">
+			<figcaption>Keyframes</figcaption>
+		</figure>
+		<p>Keyframes can be copied and pasted to another similar property using the Copy/Paste Keyframes commands in the Edit menu.
+		For instance, Density keyframes of a given body can be copied and pasted to other bodies, and Distance Joint Tension keyframes
+		of a given distance joint can be copied and pasted to other distance joints.</p>
+		<div class="note">
+			<p><span class="note-title">Notes:</span></p>
+			<ul>
+				<li>Clicking on a keyframe in the graph view (i.e., the small square) opens its value field.</li>
+				<li>During pasting operation all previous keyframes (if any) are erased before pasting the new ones.</li>
+			</ul>
+		</div>
+
+		<!--========== Preferences ==========-->
+		<a id="Preferences"></a>
+		<h2>Preferences</h2>
+		<p>Newton's preferences dialog allows you to customize certain aspects of the plug-in, such as the appearence of the user interface, the joint colors, or the behavior of kinematic bodies.</p>
+
+		<h3>General</h3>
+		<figure>
+			<img class="illust" src="./images/preferences_general.png" alt="Preferences">
+			<figcaption>Preferences > General</figcaption>
+		</figure>
+
+		<p class="prop-title">Undo</p>
+		<p class="prop-text">This parameter specifies the maximum number of undo levels.</p>
+		<p></p>
+
+		<p class="prop-title">Kinematic Body</p>
+		<p class="prop-text">A kinematic body becomes dynamic after a certain criteria is met. You can choose between Becomes Dynamic after the Last Keyframe and Becomes Dynamic at Inpoint options.</p>
+		<p></p>
+
+		<p class="prop-title">Dormant Body</p>
+		<p class="prop-text">A dormant body doesn't move until another body collides with it. This option allows you to specify how Newton must interpret a dormant body before collision.
+		You can choose between Has 0 Gravity Scale before Collision and Is Interpreted as Static before Collision options.
+		The first option tells Newton to interpret dormant bodies as dynamic that are not influenced by gravity. The second option tells Newton to interpret dormant bodies as static bodies.
+		These options yield slighlty different simulations when collision occurs.</p>
+		<p></p>
+
+		<p class="prop-title">Copy/Paste Body Settings</p>
+		<p class="prop-text">You can choose whether the body color is also pasted when pasting body settings.</p>
+		<p></p>
+
+		<p class="prop-title">Body Identification for Auto Load Settings</p>
+		<p class="prop-text">You can specify the identifier that must be used by Newton when it auto-loads scene settings.
+		Layer ID is an AE internal parameter attached to the layer, it is tied to a specific comp. Layer Index is the position of the layer in the layers stack.</p>
+
+		<h3>Preview</h3>
+		<figure>
+			<img class="illust" src="./images/preferences_preview.png" alt="Preview">
+			<figcaption>Preferences > Preview</figcaption>
+		</figure>
+
+		<p class="prop-title">Body Selection Highlight</p>
+		<p class="prop-text">This parameter sets the color used for highlighting the selected bodies.</p>
+		<p></p>
+
+		<p class="prop-title">Selection Stroke Width</p>
+		<p class="prop-text">This parameter sets the width of the stroke used for highlighting the selected bodies.</p>
+		<p></p>
+
+		<p class="prop-title">Static Body Highlight</p>
+		<p class="prop-text">This parameter sets the color used for highligting static bodies.</p>
+		<p></p>
+
+		<p class="prop-title">Joint Color</p>
+		<p class="prop-text">This parameter sets the joint color associated with its type.</p>
+		<p></p>
+
+		<p class="prop-title">Selected Joint</p>
+		<p class="prop-text">This parameter sets the color of the selected joints.</p>
+		<p></p>
+
+		<p class="prop-title">Joint Stroke Width</p>
+		<p class="prop-text">This parameter sets the width of the stroke used to draw joints.</p>
+		<p></p>
+
+        <p class="prop-title">Comp Bounds</p>
+		<p class="prop-text">This parameter sets the color used for drawing the bounds of the composition.</p>
+
+
+		<!--========== Actions History ==========-->
+		<a id="ActionsHistory"></a>
+		<h2>Actions History</h2>
+		<p>You can use the Actions History panel to quickly jump between past operations. The maximum levels of undo is set to 100 by default,
+		but this can be changed in Newton Box2 dialog. To clear history, right-click in the view and chosse Clear.</p>
+		<figure>
+			<img class="illust" src="./images/actions_history.png" alt="Actions History">
+			<figcaption>Actions History</figcaption>
+		</figure>
+
+
+		<!--========== Load/Save Settings ==========-->
+		<a id="LoadSaveSettings"></a>
+		<h2>Loading and Saving Settings</h2>
+		<p>Once you have assigned settings to bodies (including position and rotation), you can save them as an XML file for future use.
+		If the Auto Load/Save Settings option is active, Newton will try to load (at startup) or save (at quit) the last scene settings.
+		This option is particularly useful when you need to jump frequently back and forth between Newton and the same composition.</p>
+		<figure>
+			<img class="illust" src="./images/load_save_settings.png" alt="Load/Save Settings">
+			<figcaption>Load/Save Settings</figcaption>
+		</figure>
+		<p>When loading settings, Newton tries to find a matching layer for each saved body. This identification can be done using either
+		layerID (AE's internal parameter to identify a layer in a specific comp), layer name or layer index.</p>
+		<figure>
+			<img class="illust" src="./images/load_settings_dlg.png" alt="Load Settings Dialog">
+			<figcaption>Load Settings Dialog</figcaption>
+		</figure>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>If you have created a copy of a composition for which you had saved Newton settings,
+					and you would like to reapply the same settings to the new composition, you would choose either Layer Index
+					(if you didn't add or remove layers in the duplicate composition), or Layer Name (if you didn't rename layers
+					in the duplicate composition).</li>
+			</ul>
+		</div>
+
+		<!--========== Separating Shapes ==========-->
+		<a id="SeparatingShapes"></a>
+		<h2>Separating Shapes</h2>
+		<p>When a layer contains more than one mask or path, the Shapes Separation dialog pops up.
+        You must specify whether Newton should interpret each shape of a layer as an individual
+        layer (AE) or body (Newton). If you don't separate shapes, the compound shape will be considered.</p>
+		<figure>
+			<img class="illust" src="./images/shapes_separation.png" alt="Shapes Separation">
+			<figcaption>Shapes Separation</figcaption>
+		</figure>
+
+
+		<!--========== Apply Result ==========-->
+		<a id="ApplyResult"></a>
+		<h2>Applying Result</h2>
+		<p>When your are satisfied with the simulation, specify the frame range to be exported and hit Render.
+		By default, the end frame is set to the last frame number of the composition, but you can specify any duration.</p>
+		<p>Two additional options allow you to specify whether the result must be applied to a copy of the original
+        composition, and whether motion blur must be enabled for moving bodies.</p>
+		<p>The simulation is solved again, but this time animation data are stored in memory.
+		At the end of the simulation, stored values are converted to AE keyframes, and Newton quits.</p>
+		<figure>
+			<img class="illust" src="./images/export.png" alt="Render">
+			<figcaption>Export Newton animation to AE keyframes</figcaption>
+		</figure>
+		<div class="note">
+			<p><span class="note-title">Note:</span></p>
+			<ul>
+				<li>Setting the End Frame in the Export panel also sets the end frame of the preview.</li>
+			</ul>
+		</div>
+
+		<!--========== Keyboard Shortcuts ==========-->
+		<a id="KeyboardShortcuts"></a>
+		<h2>Keyboard Shortcuts</h2>
+		<p>You can open the Keyboard Shortcuts dialog either using the menu command Help > Keyboard Shortcuts...
+			or using Alt . shortcut. The following table enumerates the available shortcuts.</p>
+		<table>
+			<thead>
+				<tr><th>Key</th><th>Result</th></tr>
+			</thead>
+			<tbody>
+				<tr><td colspan="2" class="sectionTitle"><b>Setting type of selected bodies</b></td></tr>
+				<tr><td>S</td><td>Set to static</td></tr>
+				<tr><td>K</td><td>Set to kinematic</td></tr>
+				<tr><td>D</td><td>Set to dynamic</td></tr>
+				<tr><td>A</td><td>Set to dormant</td></tr>
+				<tr><td>M</td><td>Set to AEmatic</td></tr>
+				<tr><td>E</td><td>Set to dead</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Moving/Rotating selected bodies</b></td></tr>
+				<tr><td>&#8592;&#8593;&#8594;&#8595;</td><td>Move by 1 pixel</td></tr>
+				<tr><td>Shift &#8592;&#8593;&#8594;&#8595;</td><td>Move by 10 pixels</td></tr>
+				<tr><td>+/-</td><td>Rotate by 1 degree</td></tr>
+				<tr><td>Shift +/-</td><td>Rotate by 10 degrees</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Selecting bodies</b></td></tr>
+				<tr><td>C</td><td>Select bodies with the same color</td></tr>
+				<tr><td>L</td><td>Select bodies with the same label</td></tr>
+				<tr><td>Q</td><td>Select bodies with the same collision group</td></tr>
+                <tr><td>T</td><td>Select bodies with the same type</td></tr>
+				<tr><td>I</td><td>Invert selection</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Selecting joints</b></td></tr>
+				<tr><td>W</td><td>Select joints of selected bodies</td></tr>
+				<tr><td>Alt W</td><td>Remove joints of selected bodies</td></tr>
+                <tr><td>F</td><td>Select joints with the same type</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Selecting tools</b></td></tr>
+				<tr><td>V</td><td>Select the Selection Tool</td></tr>
+				<tr><td>H</td><td>Select the Hand Tool</td></tr>
+				<tr><td>Space Bar</td><td>Select temporarily the Hand Tool</td></tr>
+				<tr><td>Y</td><td>Select the Joint Anchor Tool</td></tr>
+				<tr><td>G</td><td>Select the Gravity Tool</td></tr>
+				<tr><td>P</td><td>Select the Velocity Tool</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Simulation commands</b></td></tr>
+				<tr><td>0</td><td>Start or Pause</td></tr>
+				<tr><td>Home</td><td>Go to first frame</td></tr>
+				<tr><td>1 or Page Down</td><td>Go to next frame</td></tr>
+				<tr><td>2</td><td>Activate loop mode</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Joint anchors</b></td></tr>
+				<tr><td>X</td><td>Move AEmatic anchor to center of mass</td></tr>
+				<tr><td>Alt move</td><td>Relative shift of selected AEmatic anchors</td></tr>
+				<tr><td></td><td>Move anchorA and anchorB of selected distance joints</td></tr>
+				<tr><td></td><td>Relative shift of selected pivot joints</td></tr>
+				<tr><td></td><td>Move anchorA and anchorB of selected spring joints</td></tr>
+				<tr><td>Ctrl<SUP>*</SUP></td><td>Snap anchor to nearest contour vertex</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Creating distance joints</b></td></tr>
+				<tr><td>Alt Click</td><td>Shortest distance</td></tr>
+                <tr><td>Alt Shift Click</td><td>Shortest distance on anchorA-anchorB line</td></tr>
+				<tr><td>Ctrl<SUP>*</SUP> Alt Click</td><td>Between every pair</td></tr>
+				<tr><td>Ctrl<SUP>*</SUP> Alt Shift Click</td><td>Triangulation</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Show or hide panels</b></td></tr>
+				<tr><td>Alt 1</td><td>Bodies</td></tr>
+				<tr><td>Alt 2</td><td>Joints</td></tr>
+				<tr><td>Alt 3</td><td>Global Properties</td></tr>
+                <tr><td>Alt 4</td><td>Body Properties</td></tr>
+                <tr><td>Alt 5</td><td>Joint Properties</td></tr>
+				<tr><td>Alt 6</td><td>Export</td></tr>
+				<tr><td>Alt 7</td><td>Info</td></tr>
+                <tr><td>Alt 8</td><td>Actions History</td></tr>
+                <tr><td>Ctrl<SUP>*</SUP> Alt 1</td><td>Toggle all</td></tr>
+                <tr><td>Alt 0</td><td>Reset to default layout</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>File menu commands</b></td></tr>
+				<tr><td>Alt O</td><td>Load Settings</td></tr>
+				<tr><td>Alt S</td><td>Save Settings</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Edit menu commands</b></td></tr>
+				<tr><td>Ctrl Z (win), Alt Z (mac)</td><td>Undo</td></tr>
+				<tr><td>Ctrl Y (win), Alt Shift Z (mac)</td><td>Redo</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Auxiliary dialogs</b></td></tr>
+				<tr><td>Ctrl<SUP>*</SUP> Alt P</td><td>Preferences</td></tr>
+				<tr><td>Alt .</td><td>Keyboard Shortcuts</td></tr>
+				<tr><td>Ctrl<SUP>*</SUP> Alt Shift R</td><td>Randomizer</td></tr>
+				<tr><td>F1 (win), Cmd ? (mac)</td><td>User Guide</td></tr>
+
+				<tr><td colspan="2" class="sectionTitle"><b>Miscellaneous</b></td></tr>
+				<tr><td>Delete or Backspace</td><td>Remove selected scene presets</td></tr>
+				<tr><td>Ctrl<SUP>*</SUP> Alt Shift +/-</td><td>Increase or decrease line width of selected open shape</td></tr>
+                <tr><td>Z</td><td>Reset pan and zoom</td></tr>
+                <tr><td>Ctrl<SUP>*</SUP> Alt Q</td><td>Exit</td></tr>
+			</tbody>
+		</table>
+		<p><SUP>*</SUP>: Cmd on Mac</p>
+
+
+		<!--========== Troubleshooting ==========-->
+		<a id="Troubleshooting"></a>
+		<h2>Troubleshooting</h2>
+		<p>If you detect a bug or have any questions about Newton, do not hesitate to contact our customer <a href="mailto:support@motionboutique.com">support</a> team.</p>
+
+	</div>
+
+	<div id="footer">
+		<p>Copyright &copy; 2020 Motion Boutique. All Rights Reserved.</p>
+	</div>
+</body>
+</html>
